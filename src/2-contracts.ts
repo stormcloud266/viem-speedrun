@@ -6,7 +6,7 @@ import {
   publicActions,
 } from "viem";
 import { privateKeyToAccount } from "viem/accounts";
-import { arbitrumSepolia } from "viem/chains";
+import { sepolia } from "viem/chains";
 import funJson from "../artifacts/Fun.json";
 
 import dotenv from "dotenv";
@@ -21,29 +21,24 @@ const account = privateKeyToAccount(privateKey as Hex);
 (async () => {
   const client = createWalletClient({
     account,
-    chain: arbitrumSepolia,
+    chain: sepolia,
     transport: http(process.env.API_URL),
   }).extend(publicActions);
 
   const hash = await client.deployContract({
     abi,
     bytecode: `0x${bin}`,
-    args: [127n],
   });
 
-  const { contractAddress } = await client.getTransactionReceipt({ hash });
+  const { contractAddress } = await client.waitForTransactionReceipt({ hash });
 
   if (contractAddress) {
-    const contract = getContract({
+    const x = await client.readContract({
       address: contractAddress,
       abi,
-      client,
+      functionName: "x",
     });
 
-    console.log(await contract.read.x());
-    await contract.write.changeX([132n]);
-    console.log(await contract.read.x());
-
-    console.log({ contractAddress });
+    console.log(x);
   }
 })();
