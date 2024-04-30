@@ -2,10 +2,10 @@
 pragma solidity 0.8.25;
 
 contract Fun {
-  uint public x = 125;
+  uint public x;
 
-  constructor() {
-
+  constructor(uint _x) {
+    x = _x;
   }
 
   function changeX(uint _x) external {
